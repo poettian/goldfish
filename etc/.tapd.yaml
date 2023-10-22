@@ -1,0 +1,13 @@
+tapd:
+  app_id:
+  app_secret:
+  workspace_id:
+  page_size: 200
+feishu:
+  app_id:
+  app_secret:
+  tenant_access_token:
+  docs_token:
+  story_table_id:
+  bug_table_id:
+  page_size: 500
