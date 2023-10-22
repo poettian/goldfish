@@ -72,6 +72,9 @@ func (sync *Sync) Run(force bool) {
 		if v[1] == "0" {
 			continue
 		}
+		if _, ok := sync.records[v[1]]; !ok {
+			continue
+		}
 		parentRecordIds := []string{sync.records[v[1]][0]}
 		updateRecordRequest.Records = append(updateRecordRequest.Records, api.UpdateRecord{
 			RecordId: v[0],
@@ -94,31 +97,45 @@ func (sync *Sync) getInsertRecords(stories []types.Story) api.InsertRecordsReque
 	for _, story := range stories {
 		fields := types.Fields{
 			ID: story.ID,
-			Name: types.Link{
+			Name: &types.Link{
 				Link: fmt.Sprintf("https://www.tapd.cn/%s/prong/stories/view/%s", sync.config.Tapd.WorkspaceId, story.ID),
 				Text: story.Name,
 			},
-			Created:   pkg.TimeStrToUnixMilli(story.Created),
-			Modified:  pkg.TimeStrToUnixMilli(story.Modified),
-			Status:    types.StoryStatus[story.Status],
-			Begin:     pkg.DateStrToUnixMilli(story.Begin),
-			Due:       pkg.DateStrToUnixMilli(story.Due),
-			Developer: strings.Split(strings.TrimRight(story.Developer, ";"), ";"),
-			Iteration: types.Link{
+			Created:         pkg.TimeStrToUnixMilli(story.Created),
+			Modified:        pkg.TimeStrToUnixMilli(story.Modified),
+			Status:          types.StoryStatus[story.Status],
+			EffortCompleted: pkg.StrToFloat64(story.EffortCompleted),
+			Progress:        pkg.StrToFloat64(story.Progress) / 100,
+			CustomFieldFour: story.CustomFieldFour,
+		}
+		if story.Begin != "" {
+			fields.Begin = pkg.DateStrToUnixMilli(story.Begin)
+		}
+		if story.Due != "" {
+			fields.Due = pkg.DateStrToUnixMilli(story.Due)
+		}
+		if story.Developer != "" {
+			fields.Developer = strings.Split(strings.TrimRight(story.Developer, ";"), ";")
+		}
+		if story.IterationID != "0" {
+			fields.Iteration = &types.Link{
 				Link: fmt.Sprintf("https://www.tapd.cn/%s/prong/iterations/view/%s", sync.config.Tapd.WorkspaceId, story.IterationID),
 				Text: story.IterationID,
-			},
-			Release: types.Link{
+			}
+		}
+		if story.ReleaseID != "0" {
+			fields.Release = &types.Link{
 				Link: fmt.Sprintf("https://www.tapd.cn/%s/releases/view/%s", sync.config.Tapd.WorkspaceId, story.ReleaseID),
 				Text: story.ReleaseID,
-			},
-			Effort:          pkg.StrToFloat64(story.Effort),
-			EffortCompleted: pkg.StrToFloat64(story.EffortCompleted),
-			Progress:        pkg.StrToFloat64(story.Progress),
-			CustomFieldFour: story.CustomFieldFour,
-			ParentId:        story.ParentID,
-			ParentRecordId:  nil,
+			}
 		}
+		if story.Effort != "" {
+			fields.Effort = pkg.StrToFloat64(story.Effort)
+		}
+		if story.ParentID != "0" {
+			fields.ParentId = story.ParentID
+		}
+
 		insertRecordsRequest.Records = append(insertRecordsRequest.Records, api.InsertRecord{Fields: fields})
 	}
 

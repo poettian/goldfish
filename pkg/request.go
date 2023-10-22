@@ -3,7 +3,6 @@ package pkg
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -50,7 +49,7 @@ func (r *Request) Do() ([]byte, error) {
 	}
 	// 发起HTTP请求
 
-	log.Printf("发起HTTP请求: %s %s %+v %s\n", r.Method, r.Url, r.Headers, r.Body)
+	//log.Printf("发起HTTP请求: %s %s %+v %s\n", r.Method, r.Url, r.Headers, r.Body)
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -63,7 +62,7 @@ func (r *Request) Do() ([]byte, error) {
 		return nil, fmt.Errorf("HTTP响应解析错误: %s %w", r.Url, err)
 	}
 
-	log.Printf("HTTP响应: %s %d %s\n", r.Url, response.StatusCode, string(responseBody))
+	//log.Printf("HTTP响应: %s %d %s\n", r.Url, response.StatusCode, string(responseBody))
 
 	if response.StatusCode != 200 {
 		return nil, fmt.Errorf("HTTP响应错误: %s %d %s", r.Url, response.StatusCode, string(responseBody))
