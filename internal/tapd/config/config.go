@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Tapd   Tapd   `mapstructure:"tapd"`
 	Feishu Feishu `mapstructure:"feishu"`
+	Sqlite Sqlite `mapstructure:"sqlite"`
 }
 
 type Tapd struct {
@@ -26,6 +27,10 @@ type Feishu struct {
 	StoryTableId      string `mapstructure:"story_table_id"`
 	BugTableId        string `mapstructure:"bug_table_id"`
 	PageSize          int    `mapstructure:"page_size"`
+}
+
+type Sqlite struct {
+	file string `mapstructure:"file"`
 }
 
 var c Config
