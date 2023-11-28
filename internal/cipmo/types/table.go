@@ -1,10 +1,12 @@
 package types
 
+// Link 飞书表格中的链接
 type Link struct {
 	Link string `json:"link"`
 	Text string `json:"text"`
 }
 
+// Fields 飞书表格中每条记录的字段
 type Fields struct {
 	ID              string   `json:"需求ID,omitempty"`
 	Name            *Link    `json:"需求,omitempty"`
@@ -26,6 +28,7 @@ type Fields struct {
 	//CustomField9    string `json:"业务线,omitempty"`
 }
 
+// Record 飞书表格中的一条记录
 type Record struct {
 	RecordId string `json:"record_id"`
 	Fields   Fields `json:"fields"`

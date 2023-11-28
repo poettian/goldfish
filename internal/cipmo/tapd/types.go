@@ -1,4 +1,6 @@
-package types
+package tapd
+
+import "reflect"
 
 /* 需求状态
 "options": {
@@ -81,4 +83,8 @@ type Story struct {
 	CustomFieldFour string `json:"custom_field_four"` // 优先级别
 	CustomFieldFive string `json:"custom_field_five"` // 开发端
 	CustomField9    string `json:"custom_field_9"`    // 业务线
+}
+
+func (s *Story) GetFields() []string {
+	t := reflect.TypeOf(s)
 }

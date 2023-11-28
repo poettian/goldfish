@@ -1,10 +1,11 @@
-package tapd
+package cipmo
 
 import (
 	"fmt"
-	"goldfish/internal/tapd/api"
-	"goldfish/internal/tapd/config"
-	"goldfish/internal/tapd/types"
+	"goldfish/internal/cipmo/api"
+	"goldfish/internal/cipmo/config"
+	"goldfish/internal/cipmo/tapd"
+	"goldfish/internal/cipmo/types"
 	"goldfish/pkg"
 	"log"
 	"strings"
@@ -12,7 +13,7 @@ import (
 
 type Sync struct {
 	config   *config.Config
-	storyApi *api.StoryApi
+	storyApi *tapd.StoryApi
 	tableApi *api.TableApi
 	records  map[string][]string
 }
@@ -21,7 +22,7 @@ func New() *Sync {
 	c := config.GetTapdConfig()
 	s := &Sync{
 		config:   c,
-		storyApi: api.NewStoryApi(&c.Tapd),
+		storyApi: tapd.NewStoryApi(&c.Tapd),
 		tableApi: api.NewTableApi(&c.Feishu),
 		records:  make(map[string][]string),
 	}
@@ -90,7 +91,7 @@ func (sync *Sync) Run(force bool) {
 	log.Println("表格更新数据成功")
 }
 
-func (sync *Sync) getInsertRecords(stories []types.Story) api.InsertRecordsRequest {
+func (sync *Sync) getInsertRecords(stories []tapd.Story) api.InsertRecordsRequest {
 	insertRecordsRequest := api.InsertRecordsRequest{
 		Records: make([]api.InsertRecord, 0, len(stories)),
 	}
@@ -103,7 +104,7 @@ func (sync *Sync) getInsertRecords(stories []types.Story) api.InsertRecordsReque
 			},
 			Created:         pkg.TimeStrToUnixMilli(story.Created),
 			Modified:        pkg.TimeStrToUnixMilli(story.Modified),
-			Status:          types.StoryStatus[story.Status],
+			Status:          tapd.StoryStatus[story.Status],
 			EffortCompleted: pkg.StrToFloat64(story.EffortCompleted),
 			Progress:        pkg.StrToFloat64(story.Progress) / 100,
 			CustomFieldFour: story.CustomFieldFour,

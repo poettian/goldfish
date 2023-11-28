@@ -1,21 +1,49 @@
-package api
+package tapd
 
 import (
 	"encoding/json"
 	"fmt"
-	"goldfish/internal/tapd/config"
-	"goldfish/internal/tapd/types"
+	"goldfish/internal/cipmo/config"
 	"goldfish/pkg"
 	"strings"
 )
 
-type StoryApi struct {
+type BasicAuth struct {
 	appId     string
 	appSecret string
-	fields    []string
-	filter    map[string]string
-	order     string
-	pageSize  int
+}
+
+type Query struct {
+	fields   []string          // 需要获取的字段
+	filter   map[string]string // 查询条件
+	order    string
+	pageSize int
+}
+
+type Response struct {
+	Status int         `json:"status"`
+	Data   interface{} `json:"data"`
+	Info   string      `json:"info"`
+}
+
+type Api struct {
+	BasicAuth
+}
+
+func NewApi(c *config.Tapd) *Api {
+
+	return &StoryApi{
+		appId:     c.AppId,
+		appSecret: c.AppSecret,
+		fields:    fields,
+		filter: map[string]string{
+			"workspace_id":      c.WorkspaceId,
+			"custom_field_five": "后端", // TODO: 从配置文件中读取
+			"status":            "<>resolved",
+		},
+		order:    "id desc",
+		pageSize: c.PageSize,
+	}
 }
 
 type CountResponse struct {
@@ -29,7 +57,7 @@ type CountResponse struct {
 type StoryResponse struct {
 	Status int `json:"status"`
 	Data   []struct {
-		Story types.Story `json:"Story"`
+		Story Story `json:"Story"`
 	} `json:"data"`
 	Info string `json:"info"`
 }
@@ -63,7 +91,30 @@ func (t *StoryApi) GetStoriesCount() (int, error) {
 }
 
 // GetStories 获取故事列表
-func (t *StoryApi) GetStories(page int) ([]types.Story, error) {
+func (t *StoryApi) GetStories(page int) ([]Story, error) {
+
+	// TODO：从 types.Story 的 json tag 中解析
+	fields := []string{
+		"id",
+		"workspace_id",
+		"name",
+		"developer",
+		"status",
+		"begin",
+		"due",
+		"effort",
+		"effort_completed",
+		"progress",
+		"custom_field_four", // 优先级别
+		"custom_field_five", // 开发端
+		"custom_field_9",    // 业务线
+		"parent_id",
+		"iteration_id",
+		"release_id",
+		"created",
+		"modified",
+	}
+
 	// 发起HTTP请求
 	request := pkg.NewRequest()
 	request.Method = "GET"
@@ -93,45 +144,9 @@ func (t *StoryApi) GetStories(page int) ([]types.Story, error) {
 		return nil, fmt.Errorf("API请求出错: %s %s", request.Url, storyResponse.Info)
 	}
 	// TODO: 处理迭代和发布计划字段
-	storyList := make([]types.Story, 0, len(storyResponse.Data))
+	storyList := make([]Story, 0, len(storyResponse.Data))
 	for _, v := range storyResponse.Data {
 		storyList = append(storyList, v.Story)
 	}
 	return storyList, nil
-}
-
-func NewStoryApi(c *config.Tapd) *StoryApi {
-	// TODO：从 types.Story 的 json tag 中解析
-	fields := []string{
-		"id",
-		"workspace_id",
-		"name",
-		"developer",
-		"status",
-		"begin",
-		"due",
-		"effort",
-		"effort_completed",
-		"progress",
-		"custom_field_four", // 优先级别
-		"custom_field_five", // 开发端
-		"custom_field_9",    // 业务线
-		"parent_id",
-		"iteration_id",
-		"release_id",
-		"created",
-		"modified",
-	}
-	return &StoryApi{
-		appId:     c.AppId,
-		appSecret: c.AppSecret,
-		fields:    fields,
-		filter: map[string]string{
-			"workspace_id":      c.WorkspaceId,
-			"custom_field_five": "后端", // TODO: 从配置文件中读取
-			"status":            "<>resolved",
-		},
-		order:    "id desc",
-		pageSize: c.PageSize,
-	}
 }

@@ -5,23 +5,23 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"goldfish/internal/tapd"
+	"goldfish/internal/cipmo"
 	"log"
 	"os"
 )
 
 var force *bool
 
-// tapdCmd represents the tapd command
+// tapdCmd represents the cipmo command
 var tapdCmd = &cobra.Command{
-	Use:   "tapd",
-	Short: "Sync tapd stories and bugs into feishu bitable",
+	Use:   "cipmo",
+	Short: "Sync cipmo stories and bugs into feishu bitable",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// 设置日志输出到标准输出
 		log.SetOutput(os.Stdout)
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
-		tapd.New().Run(*force)
+		cipmo.New().Run(*force)
 	},
 }
 

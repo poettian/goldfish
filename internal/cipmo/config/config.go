@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	Tapd   Tapd   `mapstructure:"tapd"`
+	Tapd   Tapd   `mapstructure:"cipmo"`
 	Feishu Feishu `mapstructure:"feishu"`
 	Sqlite Sqlite `mapstructure:"sqlite"`
 }
@@ -46,7 +46,7 @@ func GetTapdConfig() *Config {
 
 // initConfig 初始化配置
 func initConfig() {
-	viper.SetConfigName("tapd")
+	viper.SetConfigName("cipmo")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./etc")
 	err := viper.ReadInConfig()

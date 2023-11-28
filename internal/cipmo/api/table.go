@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"goldfish/internal/tapd/config"
-	"goldfish/internal/tapd/types"
+	"goldfish/internal/cipmo/config"
+	"goldfish/internal/cipmo/types"
 	"goldfish/pkg"
 	"log"
 	"strings"
